@@ -1,0 +1,7 @@
+# Kvasir-SEG Dataset Configuration
+path: ./datasets/kvasir_seg
+train: images/train
+val: images/val
+
+names:
+  0: polyp

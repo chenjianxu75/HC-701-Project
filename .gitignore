@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# Local datasets and large raw assets
+archive/
+kvasir-seg/
+datasets/*
+!datasets/README.md
+checkpoints/*
+!checkpoints/README.md
+runs/
+week1/
+week1.zip
+week2/
+output/
+results/artifacts/
+results/summary/demo_report.md
+results/summary/rtdetr_eval_summary_100ep.json
+
+# Temporary or local-only files
+bus.jpg
+gpu_smoke.py
+output.txt
+remote_probe.py
+/paper.md
+/bootstrap_rtdetr_env.sh
+/eval_rtdetr.py
+/prepare_rtdetr_data.py
+/run_rtdetr_phase3.sh
+/train_rtdetr.py
+/requirements-rtdetr-server.txt
+
+# Reference material not needed in the public repo
+docs/reference/*.pdf
+docs/reference/
+docs/paper.md
+docs/plan.md
+docs/plan_ttt_test.md
+docs/project_status_report.md
+docs/task.md
+
+# Generated caches in scripts
+scripts/**/__pycache__/

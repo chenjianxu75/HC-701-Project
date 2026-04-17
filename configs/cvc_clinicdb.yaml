@@ -1,0 +1,8 @@
+# CVC-ClinicDB Dataset Configuration (Test Only)
+path: ./datasets/cvc_clinicdb
+train:  # Empty - not used for training
+val:    # Empty - not used for validation
+test: images/test
+
+names:
+  0: polyp

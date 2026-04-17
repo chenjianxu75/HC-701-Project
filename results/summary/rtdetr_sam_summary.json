@@ -1,0 +1,20 @@
+{
+  "kvasir": {
+    "Precision": 0.9312,
+    "Recall": 0.9154,
+    "Mask mAP50": 0.959,
+    "Mask mAP50_95": 0.783
+  },
+  "cvc": {
+    "Precision": 0.8671,
+    "Recall": 0.8143,
+    "Mask mAP50": 0.846,
+    "Mask mAP50_95": 0.665
+  },
+  "etis": {
+    "Precision": 0.8533,
+    "Recall": 0.8217,
+    "Mask mAP50": 0.827,
+    "Mask mAP50_95": 0.624
+  }
+}

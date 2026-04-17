@@ -1,0 +1,26 @@
+{
+  "kvasir_val": {
+    "precision": 0.9265,
+    "recall": 0.9141,
+    "map50": 0.963,
+    "map50_95": 0.7993,
+    "data": "configs/kvasir_det.yaml",
+    "split": "val"
+  },
+  "cvc_test": {
+    "precision": 0.8044,
+    "recall": 0.8533,
+    "map50": 0.877,
+    "map50_95": 0.6891,
+    "data": "configs/cvc_clinicdb_det.yaml",
+    "split": "test"
+  },
+  "etis_test": {
+    "precision": 0.8125,
+    "recall": 0.846,
+    "map50": 0.879,
+    "map50_95": 0.6811,
+    "data": "configs/etis_larib_det.yaml",
+    "split": "test"
+  }
+}

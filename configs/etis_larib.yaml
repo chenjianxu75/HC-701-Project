@@ -1,0 +1,8 @@
+# ETIS-Larib Dataset Configuration (Hard-case Test Only)
+path: ./datasets/etis_larib
+train:  # Empty - not used for training
+val:    # Empty - not used for validation
+test: images/test
+
+names:
+  0: polyp

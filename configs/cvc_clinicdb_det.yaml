@@ -1,0 +1,8 @@
+# CVC-ClinicDB detection dataset for RT-DETR evaluation
+path: ./datasets/cvc_clinicdb_det
+train:
+val:
+test: images/test
+
+names:
+  0: polyp

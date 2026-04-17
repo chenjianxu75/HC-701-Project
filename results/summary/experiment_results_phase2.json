@@ -1,0 +1,9 @@
+{
+  "v8n_50ep_kvasir_train": 0.946,
+  "v8n_50ep_kvasir": 0.946,
+  "v8n_50ep_cvc": 0.42,
+  "v8n_50ep_etis": 0.38,
+  "v11s_50ep_kvasir": 0.954,
+  "v11s_50ep_cvc": 0.827,
+  "v11s_50ep_etis": 0.78
+}

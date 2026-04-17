@@ -1,0 +1,8 @@
+# ETIS-Larib detection dataset for RT-DETR evaluation
+path: ./datasets/etis_larib_det
+train:
+val:
+test: images/test
+
+names:
+  0: polyp
