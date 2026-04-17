@@ -1,0 +1,7 @@
+# Auto-generated for ablation fine-tuning
+path: ./datasets/etis_finetune_det
+train: images/train
+val: images/val
+
+names:
+  0: polyp
