@@ -9,28 +9,76 @@ The project covers four main experiment lines:
 - `RT-DETR-L + SAM` two-stage box-to-mask evaluation
 - `TTN` / `TTT` test-time adaptation on both YOLO segmentation and RT-DETR+SAM
 
-## Result Notes
+## How To Read The Tables
 
-- [`results/summary/complete_baseline_results.md`](results/summary/complete_baseline_results.md) is the curated report table used for project reporting.
-- Public result files are organized under [`results/summary/`](results/summary/), [`results/figures/`](results/figures/), [`results/visuals/`](results/visuals/), and [`results/logs/`](results/logs/).
-- Large datasets and checkpoints are intentionally not committed. Download instructions live in [`docs/DATASETS.md`](docs/DATASETS.md) and [`checkpoints/README.md`](checkpoints/README.md).
+- Unless noted otherwise, the main benchmark tables use `Kvasir-SEG` as the training source domain.
+- `Kvasir mAP50` is the in-domain result. `CVC mAP50` and `ETIS mAP50` are cross-domain results on different target datasets, so lower values there reflect domain shift rather than training failure.
+- `YOLOv8n-seg` and `YOLOv11s-seg` report mask `mAP50`.
+- `RT-DETR-L` reports box `mAP50`.
+- `RT-DETR-L + SAM` converts RT-DETR boxes into masks so it can be compared against the segmentation models on a fairer output format.
+- `TTN` and `TTT` are test-time adaptation methods. They are not new training runs from scratch.
 
-## Reported Summary Table
+## Main Cross-Domain Results
 
-The table below mirrors the curated summary file and is included here only as the repository's reported comparison table.
+The table below is the main reported comparison for models trained on `Kvasir-SEG`.
 
-| Model | Kvasir mAP50 | CVC mAP50 | ETIS mAP50 |
+| Experiment Line | Kvasir mAP50 (source-domain) | CVC mAP50 (cross-domain) | ETIS mAP50 (cross-domain) |
 | :--- | :---: | :---: | :---: |
 | YOLOv8n-seg (100 ep) | 95.4% | 43.3% | 39.5% |
 | YOLOv11s-seg (100 ep) | 95.8% | 82.4% | 77.8% |
-| RT-DETR-L (100 ep) | 96.3% | 87.7% | 87.9% |
+| RT-DETR-L (100 ep) | **96.3%** | 87.7% | 87.9% |
 | RT-DETR-L + SAM (100 ep) | 95.9% | 84.6% | 82.7% |
 | YOLOv8n-seg + TTN | 95.6% | 72.5% | 67.8% |
 | YOLOv8n-seg + TTT | 95.9% | 80.7% | 76.3% |
 | YOLOv11s-seg + TTN | 95.9% | 85.7% | 81.2% |
 | YOLOv11s-seg + TTT | 96.1% | 91.6% | 87.1% |
 | RT-DETR-L + SAM + TTN | 96.1% | 88.2% | 86.1% |
-| RT-DETR-L + SAM + TTT | 96.3% | 93.4% | 91.8% |
+| RT-DETR-L + SAM + TTT | **96.3%** | **93.4%** | **91.8%** |
+
+What this table shows:
+- `YOLOv8n-seg` fits the source domain well, but its cross-domain generalization drops sharply.
+- `YOLOv11s-seg` is much stronger than `YOLOv8n-seg` under domain shift.
+- `RT-DETR-L` is the strongest raw cross-domain detector in the baseline comparison.
+- `RT-DETR-L + SAM` sacrifices a small amount of mAP50 to produce mask outputs instead of only boxes.
+- `TTT` brings the largest recovery on cross-domain performance, especially for `YOLOv8n-seg`.
+
+## Ablation: Few-Shot Finetuning vs TTN/TTT
+
+This ablation asks a practical deployment question: is it better to use a few labeled target-domain samples for supervised finetuning, or to use label-free test-time adaptation?
+
+Notation:
+- `Baseline`: Kvasir-trained checkpoint with no target adaptation.
+- `TTN`: test-time normalization using target-domain test data, no labels, no retraining.
+- `TTT`: test-time training on target-domain test data, no labels, no full finetuning.
+- `Exp A`: finetune with `50` labeled CVC images for `20` epochs.
+- `Exp B`: continue from `Exp A`, then finetune with `20` labeled ETIS images for another `20` epochs.
+
+### CVC Target Performance
+
+| Model | Baseline | +TTN | +TTT | Exp A | Exp B |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| YOLOv8n-seg | 43.3% | 72.5% | 80.7% | 68.5% | 82.3% |
+| YOLOv11s-seg | 82.4% | 85.7% | 91.6% | 87.3% | 92.4% |
+| RT-DETR-L + SAM | 84.6% | 88.2% | 93.4% | 89.5% | 94.1% |
+
+### ETIS Target Performance
+
+| Model | Baseline | +TTN | +TTT | Exp A | Exp B |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| YOLOv8n-seg | 39.5% | 67.8% | 76.3% | 67.2% | 79.8% |
+| YOLOv11s-seg | 77.8% | 81.2% | 87.1% | 80.5% | 88.6% |
+| RT-DETR-L + SAM | 82.7% | 86.1% | 91.8% | 85.3% | 92.5% |
+
+What this ablation shows:
+- `TTT` beats single-domain few-shot finetuning (`Exp A`) on every model and on both target datasets.
+- `Exp B` is only slightly higher than `TTT`, but it requires labeled target data and extra supervised training.
+- The practical implication is that `TTT` gets close to supervised target-domain adaptation while avoiding new annotation cost.
+
+## Result Notes
+
+- [`results/summary/complete_baseline_results.md`](results/summary/complete_baseline_results.md) is the curated report table used for project reporting.
+- Public result files are organized under [`results/summary/`](results/summary/), [`results/figures/`](results/figures/), [`results/visuals/`](results/visuals/), and [`results/logs/`](results/logs/).
+- Large datasets and checkpoints are intentionally not committed. Download instructions live in [`docs/DATASETS.md`](docs/DATASETS.md) and [`checkpoints/README.md`](checkpoints/README.md).
 
 ## Repository Layout
 
