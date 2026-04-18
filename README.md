@@ -43,7 +43,6 @@ What this table shows:
 
 ## Ablation: Few-Shot Finetuning vs TTN/TTT
 
-This ablation asks a practical deployment question: is it better to use a few labeled target-domain samples for supervised finetuning, or to use label-free test-time adaptation?
 
 Notation:
 - `Baseline`: Kvasir-trained checkpoint with no target adaptation.
@@ -71,7 +70,7 @@ Notation:
 What this ablation shows:
 - `TTT` beats single-domain few-shot finetuning (`Exp A`) on every model and on both target datasets.
 - `Exp B` is only slightly higher than `TTT`, but it requires labeled target data and extra supervised training.
-- The practical implication is that `TTT` gets close to supervised target-domain adaptation while avoiding new annotation cost.
+- The practical implication is that `TTT/TTN` gets close to supervised target-domain adaptation while avoiding new annotation cost.
 
 ## Result Notes
 
