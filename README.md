@@ -16,7 +16,6 @@ The project covers four main experiment lines:
 - `YOLOv8n-seg` and `YOLOv11s-seg` report mask `mAP50`.
 - `RT-DETR-L` reports box `mAP50`.
 - `RT-DETR-L + SAM` converts RT-DETR boxes into masks so it can be compared against the segmentation models on a fairer output format.
-- `TTN` and `TTT` are test-time adaptation methods. They are not new training runs from scratch.
 
 ## Main Cross-Domain Results
 
