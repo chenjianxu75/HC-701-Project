@@ -43,6 +43,32 @@ What this table shows:
 - `RT-DETR-L + SAM` sacrifices a small amount of mAP50 to produce mask outputs instead of only boxes.
 - `TTT` brings the largest recovery on cross-domain performance, especially for `YOLOv8n-seg`.
 
+## Test-Time Adaptation Results
+
+This section isolates the `TTN` and `TTT` results so the adaptation effect is easier to read than in the mixed master table above.
+
+### CVC Adaptation
+
+| Model | Baseline | +TTN | +TTT | TTT Gain vs Baseline |
+| :--- | :---: | :---: | :---: | :---: |
+| YOLOv8n-seg | 43.3% | 72.5% | **80.7%** | **+37.4pp** |
+| YOLOv11s-seg | 82.4% | 85.7% | **91.6%** | **+9.2pp** |
+| RT-DETR-L + SAM | 84.6% | 88.2% | **93.4%** | **+8.8pp** |
+
+### ETIS Adaptation
+
+| Model | Baseline | +TTN | +TTT | TTT Gain vs Baseline |
+| :--- | :---: | :---: | :---: | :---: |
+| YOLOv8n-seg | 39.5% | 67.8% | **76.3%** | **+36.8pp** |
+| YOLOv11s-seg | 77.8% | 81.2% | **87.1%** | **+9.3pp** |
+| RT-DETR-L + SAM | 82.7% | 86.1% | **91.8%** | **+9.1pp** |
+
+What these TTA tables show:
+- `TTN` already recovers a large part of the cross-domain drop without changing the full model.
+- `TTT` is consistently stronger than `TTN` on every listed experiment line.
+- `YOLOv8n-seg` shows the largest absolute recovery, which indicates its main weakness is target-domain distribution shift rather than source-domain fitting capacity.
+- `RT-DETR-L + SAM` starts from a stronger baseline and still benefits from test-time adaptation on both target datasets.
+
 ## QP-TTA On RT-DETR
 
 This repository also includes a DETR-specific test-time adaptation route based on query prototypes and decoder attention alignment.
@@ -59,6 +85,31 @@ What this route is used for:
 
 The corresponding comparison block is included in:
 - [`results/summary/complete_baseline_results.md`](results/summary/complete_baseline_results.md)
+
+### QP-TTA Box Results
+
+This table reports the detector-only output before `SAM`, so the metric here is raw box `mAP50`.
+
+| Method | CVC Box mAP50 | ETIS Box mAP50 |
+| :--- | :---: | :---: |
+| RT-DETR-L Baseline | 87.7% | 87.9% |
+| RT-DETR-L + QP-TTA | 86.2% | 85.9% |
+
+### QP-TTA Mask Results
+
+This table reports the final `RT-DETR-L + SAM` mask output, which is the directly comparable segmentation-style result.
+
+| Method | Kvasir mAP50 | CVC mAP50 | ETIS mAP50 |
+| :--- | :---: | :---: | :---: |
+| RT-DETR-L + SAM Baseline | 95.9% | 84.6% | 82.7% |
+| RT-DETR-L + SAM + TTN | 96.1% | 88.2% | 86.1% |
+| RT-DETR-L + SAM + QP-TTA | 96.2% | 92.1% | 90.2% |
+| RT-DETR-L + SAM + TTT | 96.3% | 93.4% | 91.8% |
+
+What these QP-TTA tables show:
+- `QP-TTA` is designed for the `RT-DETR` route only; it is not a YOLO-seg adaptation method.
+- At the detector level, `QP-TTA` keeps the raw box result in a narrow range close to the original RT-DETR baseline.
+- At the final mask level, `QP-TTA` is positioned between `TTN` and `TTT`, which makes it a meaningful DETR-specific adaptation branch rather than a replacement for the existing BN-based TTA pipeline.
 
 ## Ablation: Few-Shot Finetuning vs TTN/TTT
 
