@@ -2,12 +2,13 @@
 
 This repository packages the code, curated summaries, figures, logs, and qualitative outputs for the HC701 polyp detection and segmentation experiments.
 
-The project covers four main experiment lines:
+The project covers five main experiment lines:
 
 - `YOLOv8n-seg` and `YOLOv11s-seg` baseline training on Kvasir-SEG
 - `RT-DETR-L` detection-based cross-domain evaluation
 - `RT-DETR-L + SAM` two-stage box-to-mask evaluation
 - `TTN` / `TTT` test-time adaptation on both YOLO segmentation and RT-DETR+SAM
+- `QP-TTA` query-prototype adaptation for RT-DETR and RT-DETR+SAM
 
 ## How To Read The Tables
 
@@ -16,6 +17,7 @@ The project covers four main experiment lines:
 - `YOLOv8n-seg` and `YOLOv11s-seg` report mask `mAP50`.
 - `RT-DETR-L` reports box `mAP50`.
 - `RT-DETR-L + SAM` converts RT-DETR boxes into masks so it can be compared against the segmentation models on a fairer output format.
+- `TTN` and `TTT` are test-time adaptation methods. They are not new training runs from scratch.
 
 ## Main Cross-Domain Results
 
@@ -41,8 +43,26 @@ What this table shows:
 - `RT-DETR-L + SAM` sacrifices a small amount of mAP50 to produce mask outputs instead of only boxes.
 - `TTT` brings the largest recovery on cross-domain performance, especially for `YOLOv8n-seg`.
 
+## QP-TTA On RT-DETR
+
+This repository also includes a DETR-specific test-time adaptation route based on query prototypes and decoder attention alignment.
+
+Core entry points:
+- [`scripts/data/build_qptta_bank.py`](scripts/data/build_qptta_bank.py)
+- [`scripts/eval/eval_qptta_rtdetr.py`](scripts/eval/eval_qptta_rtdetr.py)
+- [`scripts/eval/eval_qptta_rtdetr_sam.py`](scripts/eval/eval_qptta_rtdetr_sam.py)
+
+What this route is used for:
+- build a source prototype bank from `Kvasir-SEG`
+- adapt `RT-DETR-L` on target-domain images at test time
+- evaluate both raw detector boxes and the final `RT-DETR-L + SAM` mask pipeline
+
+The corresponding comparison block is included in:
+- [`results/summary/complete_baseline_results.md`](results/summary/complete_baseline_results.md)
+
 ## Ablation: Few-Shot Finetuning vs TTN/TTT
 
+This ablation asks a practical deployment question: is it better to use a few labeled target-domain samples for supervised finetuning, or to use label-free test-time adaptation?
 
 Notation:
 - `Baseline`: Kvasir-trained checkpoint with no target adaptation.
@@ -51,7 +71,7 @@ Notation:
 - `Exp A`: finetune with `50` labeled CVC images for `20` epochs.
 - `Exp B`: continue from `Exp A`, then finetune with `20` labeled ETIS images for another `20` epochs.
 
-### CVC Target Performance
+### CVC Performance
 
 | Model | Baseline | +TTN | +TTT | Exp A | Exp B |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -59,7 +79,7 @@ Notation:
 | YOLOv11s-seg | 82.4% | 85.7% | 91.6% | 87.3% | 92.4% |
 | RT-DETR-L + SAM | 84.6% | 88.2% | 93.4% | 89.5% | 94.1% |
 
-### ETIS Target Performance
+### ETIS Performance
 
 | Model | Baseline | +TTN | +TTT | Exp A | Exp B |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -70,7 +90,7 @@ Notation:
 What this ablation shows:
 - `TTT` beats single-domain few-shot finetuning (`Exp A`) on every model and on both target datasets.
 - `Exp B` is only slightly higher than `TTT`, but it requires labeled target data and extra supervised training.
-- The practical implication is that `TTT/TTN` gets close to supervised target-domain adaptation while avoiding new annotation cost.
+- The practical implication is that `TTT` gets close to supervised target-domain adaptation while avoiding new annotation cost.
 
 ## Result Notes
 
@@ -86,7 +106,7 @@ What this ablation shows:
 ├─ scripts/
 │  ├─ data/                  Dataset conversion and RT-DETR data prep
 │  ├─ train/                 Training entry points and server bootstrap
-│  ├─ eval/                  Evaluation, TTN, and TTT scripts
+│  ├─ eval/                  Evaluation, TTN, TTT, and QP-TTA scripts
 │  └─ analysis/              Figure generation and analysis helpers
 ├─ results/
 │  ├─ summary/               Curated summaries and aligned metric JSON files
@@ -120,6 +140,9 @@ python scripts/eval/eval_rtdetr.py --weights runs/detect/main_rtdetr_100ep_serve
 python scripts/eval/eval_rtdetr_sam.py
 python scripts/eval/eval_ttt_yolo.py
 python scripts/eval/eval_ttt_rtdetr_sam.py
+python scripts/data/build_qptta_bank.py
+python scripts/eval/eval_qptta_rtdetr.py --datasets cvc etis
+python scripts/eval/eval_qptta_rtdetr_sam.py --datasets cvc etis
 ```
 
 4. Rebuild the figures if needed:
